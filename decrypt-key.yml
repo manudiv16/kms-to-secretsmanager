@@ -4,23 +4,16 @@ Parameters:
   KmsKeyId:
     Description: Key Id from kms key
     Type: String
-
+    Default: 35963754-3f99-4159-85db-a5aa7fb4403a
   Password:
     Description: Encrypted password
     Type: String
+    Default: AQICAHgiAehKeQMbKilCX0KUTJlzw8KUpWjLhVKAV78JESG4UwE6I1UpiOp8/WhUUzec7TxaAAAAYjBgBgkqhkiG9w0BBwagUzBRAgEAMEwGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMp63pM2Tvq7nzwJ+qAgEQgB/oQyrTghGdAOKCrY6o255+e6zPwpSAPIjUx8NNQ2mo
 
   DataName:
     Description: Name for data name
     Type: String
-
-AuthApp:
-  Type: AWS::SecretsManager::Secret
-  Properties:
-    Name: AuthApp
-    Description: "Auth for example app"
-    SecretString: !Sub
-      - "{ username:${Username},password:${Password} }"
-      - { Username: !Ref DataName, Password: !Ref Password }
+    Default: user
 
 Resources:
   DecryptedEnvironment1:
@@ -29,6 +22,13 @@ Resources:
       ServiceToken: !ImportValue DecryptEnvFunction
       KeyId: !Ref KmsKeyId
       Value: !Ref Password
+
+  AuthApp:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: AuthApp
+      Description: "Auth for example app"
+      SecretString: !Sub "{ username: ${DataName},password:${DecryptedEnvironment1} }"
 
 Outputs:
   Encrypted:
