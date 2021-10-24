@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  DecryptEnvRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DescribeImages
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Action: kms:Decrypt
+                Effect: Allow
+                Resource: "*"
+  DecryptEnvFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Handler: index.handler
+      Role: !Sub ${DecryptEnvRole.Arn}
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import base64
+          import boto3
+          import cfnresponse
+          import traceback
+          from base64 import b64decode
+
+
+          def handler(event, context):
+            try:
+              k = event['ResourceProperties']['KeyId']
+              t = event['ResourceProperties']['Value']
+              v = boto3.client('kms').decrypt(
+                  KeyId=k,
+                  CiphertextBlob=base64.b64decode(t))['Plaintext'].decode('utf-8')
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {}, v)
+            except:
+              traceback.print_last()
+              cfnresponse.send(event, context, cfnresponse.FAIL, {}, 'ok')
+
+Outputs:
+  DecryptEnvFunction:
+    Description: Decripted value
+    Value: !Sub ${DecryptEnvFunction.Arn}
+    Export:
+      Name: "DecryptEnvFunction"

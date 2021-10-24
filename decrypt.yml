@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  KmsKeyId:
+    Description: Key Id from kms key
+    Type: String
+
+  Password:
+    Description: Encrypted password
+    Type: String
+
+  DataName:
+    Description: Name for data name
+    Type: String
+
+AuthApp:
+  Type: AWS::SecretsManager::Secret
+  Properties:
+    Name: AuthApp
+    Description: "Auth for example app"
+    SecretString: !Sub
+      - "{ username:${Username},password:${Password} }"
+      - { Username: !Ref DataName, Password: !Ref Password }
+
+Resources:
+  DecryptedEnvironment1:
+    Type: Custom::DecryptEnv
+    Properties:
+      ServiceToken: !ImportValue DecryptEnvFunction
+      KeyId: !Ref KmsKeyId
+      Value: !Ref Password
+
+Outputs:
+  Encrypted:
+    Description: Decripted value
+    Value: !Ref DecryptedEnvironment1
+    Export:
+      Name: "DecryptKey"
