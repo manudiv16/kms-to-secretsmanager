@@ -1,6 +1,6 @@
 # Kms Decrypt
-The objective is to create a kms key, encrypt a text and later decrypt it with a cloudformation to save it in the Secrets manager service. So we can save the encrypted password within our repositories by making a version control of it.
-- The first step that I have done has been the creation of a kms key through the aws cli
+The objective is to create a KMS key, encrypt a text and later decrypt it with a Cloudformation to save it in the Secrets manager service. So we can save the encrypted password within our repositories by making a version control of it.
+- The first step that I have done has been the creation of a KMS key through the AWS CLI
 ```json
 $ aws kms create-key 
 {
@@ -24,7 +24,7 @@ $ aws kms create-key
     }
 }
 ```
-- - After having created the kms key, I encrypt a text
+- - After creating the KMS key, I encrypted a text
 ```json
 $ aws kms encrypt --key-id 'c6874718-316c-4261-a9bc-c7524703ab18' --plaintext hola
 {
@@ -33,8 +33,8 @@ $ aws kms encrypt --key-id 'c6874718-316c-4261-a9bc-c7524703ab18' --plaintext ho
     "EncryptionAlgorithm": "SYMMETRIC_DEFAULT"
 }
 ```
-To decrypt this password I have used the Lambda service creating a function whose only task is to decrypt the text with the *boto3* library, for this I created the `decrypt` roles and in another separate file I have created a custom resource where it calls It has this function and passes it the parameters of the id of the kms key and the encrypted text.
-As output from the cloudformation stack there is the password already decrypted and the secret created in the resources.
-To create the secret resource I have created a dummy value for the key.
+To decrypt this password I used the Lambda service, creating a function whose only task is to decrypt the text with the *boto3* library. For this, I created the `decrypt` roles and in another separate file, I created a custom resource where it calls this function and passes the parameters of the id of the KMS key and the encrypted text.
+As the output of the Cloudformation stack, there is the password, already decrypted, and the secret that was created in the resources.
+To create the secret resource, I created a dummy value for the key.
 
-I think the best way to have control over our passwords is the direct use of the secrets manager service, the random creation and the rotary encryption of kms, already integrated in this service.
+I think the best way to have control over our passwords is the direct use of the secrets manager service, the random creation, and the rotary encryption of KMS, already integrated with this service.
