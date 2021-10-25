@@ -31,6 +31,12 @@ Resources:
       SecretString: !Sub "{ username: ${DataName},password:${DecryptedEnvironment1} }"
 
 Outputs:
+  DecryptedSecret:
+    Description: Secret with kms decrypted password
+    Value: !Ref AuthApp
+    Export:
+      Name: "AppSecret"
+
   Encrypted:
     Description: Decripted value
     Value: !Ref DecryptedEnvironment1

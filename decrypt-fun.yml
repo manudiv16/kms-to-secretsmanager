@@ -21,6 +21,7 @@ Resources:
               - Action: kms:Decrypt
                 Effect: Allow
                 Resource: "*"
+
   DecryptEnvFunction:
     Type: AWS::Lambda::Function
     Properties:
