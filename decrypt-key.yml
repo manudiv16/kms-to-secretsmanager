@@ -27,6 +27,7 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: AuthApp
+      KmsKeyId: !Ref KmsKeyId
       Description: "Auth for example app"
       SecretString: !Sub "{ username: ${DataName},password:${DecryptedEnvironment1} }"
 
