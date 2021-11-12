@@ -25,6 +25,7 @@ Resources:
   DecryptEnvFunction:
     Type: AWS::Lambda::Function
     Properties:
+      Tracing: Active
       Runtime: python3.6
       Handler: index.handler
       Role: !Sub ${DecryptEnvRole.Arn}
